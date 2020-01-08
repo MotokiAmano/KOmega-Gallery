@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
    u_long_i  = 120;
 
    /*[s] read Hamiltonian defined in Matrix Market form*/
-   sprintf(sdt,"zvo_Ham.dat");
+   sprintf(sdt,"Ham.dat");
    fp = fopen(sdt, "r");
    if(fp==NULL) return 0;
    /*[s] skip header*/
@@ -171,7 +171,7 @@ int main(int argc, char* argv[]){
        for(int_i=0;int_i<All_N;int_i++){
          tmp = 0.0;
          for(int_z=0;int_z<nz;int_z++){
-           tmp += x[int_i+int_z*All_N]*cpow(z[int_z]-gamma,1.0*int_k+1.0);
+           tmp += x[int_i+int_z*All_N]*cpow((z[int_z]-gamma)/rho,1.0*int_k+1.0);
          }
          tmp=tmp/nz;
          s[int_i][int_k+cnt_nr*nk] = tmp;
