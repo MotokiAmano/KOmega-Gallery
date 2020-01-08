@@ -1,5 +1,7 @@
-##Description
-Sakurai-Sugiura(SS)法を用いた、固有値の計算のサンプルコード。
+ ## Description
+
+
+Sample code for obtaining eigenvalues using Sakurai-Sugiura (SS) method. 
 
 ## Compile 
 とりあえず、sekirei (issp system B)
