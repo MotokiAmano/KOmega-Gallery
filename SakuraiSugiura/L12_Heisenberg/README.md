@@ -59,4 +59,4 @@ nr: number of vectors used in SS method
 nk: order  of moment used in  SS method
 ```
 
-Author: Takahiro Misawa (ISSP, Univ. of Tokyo), Date: 2019/12/30
+Author: Takahiro Misawa (ISSP, Univ. of Tokyo), Date: 2020/1/8
