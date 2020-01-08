@@ -39,7 +39,7 @@ itermax: maximum value for iterations in komega
 threshold : threshold for convergence in komega
 ```
 
-The complex intergrals are performed
+The contour intergrals are performed
 at the following points.
 
 ```
@@ -48,9 +48,9 @@ zj=γ+ρ*exp[(2πI/nz)*(j+1/2)]
 
 Here, 
 ```
-gamma: origin of the complex integrals
-rho: length of the complex integrals
-nz:  points of the complex intergral
+gamma: origin of the contour  integrals
+rho: length of the contour  integrals
+nz:  points of the contour intergral
 ```
 
 Following parameters are used in SS method.
