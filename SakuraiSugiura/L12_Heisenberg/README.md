@@ -1,55 +1,62 @@
-##Description
-Sakurai-Sugiura(SS)法を用いた、固有値の計算のサンプルコード。
+ ## Description
 
-## Compile 
-とりあえず、sekirei (issp system B)
-で動くようにしてあります。
-それ以外のシステムを使うときは、
-lapackのオプションと
-komegaの
-libとincludeを適当に変更してください。
+Sample code for obtaining eigenvalues using Sakurai-Sugiura (SS) method. 
 
+## How to compile 
+
+Using com.sh, one can compile the sample code in the supercomputer at ISSP (sekirei).
+If oun wants to use other systems,
+please change compile options for lapack and komega (lib and include).
+
+By performing,
 ```
 sh ./com.sh
 ```
-で実行体
-SSkomega
-ができます。
+SSkomega is generated.
 
 ## Calculation
-MatrixMarket方式のハミルトニアン
-zvo_Ham.dat
-を用意します。
+To perform calculations, 
+a input file for Hamiltonian is necessary (MatrixMarket format). 
+In this sample code, we used Ham.dat, which descrises
+the 12-site one-dimensional Heisenberg chain.
 
+By performing,
+```
 ./SSKomega
-
-でそのハミルトニアンを用いてSS法を行って
-指定した範囲内での、
-固有値・固有ベクトルを計算します。
-
-## SS法のパラメーター
-ser parametersのところで、
-コードの中(SSKomega.c)で直接指定してしまっています。
-
-Komegaのパラメータは以下の２つです。
 ```
-itermax: komegaのitetationの最大値
-threshold : komegaの収束判定
+one can perform Sakurai-Sugira method and
+obtain the eigenvalues and eigenvectors
+in the specified region.
+
+## Parameters in SS method
+Parameters are directly specifid in the source code
+(SSKomega.c).
+
+
+Parameters used Komega are following two. 
+```
+itermax: maximum value for iterations in komega
+threshold : threshold for convergence in komega
 ```
 
-周回積分は
+The contour intergrals are performed
+at the following points.
+
+```
 zj=γ+ρ*exp[(2πI/nz)*(j+1/2)]
-で行うようにしています。
-```
-gamma: 周回積分の原点
-rho: 周回積分の長さ
-nz: 周回積分を行う分点数
 ```
 
-以下は、SS法のパラメータです。
+Here, 
 ```
-nr: SS法で用いるベクトルの数
-nk: SS法で計算する次数 
+gamma: origin of the contour  integrals
+rho: length of the contour  integrals
+nz:  points of the contour intergral
 ```
 
-Author: Takahiro Misawa (ISSP, Univ. of Tokyo), Date: 2019/12/30
+Following parameters are used in SS method.
+```
+nr: number of vectors used in SS method
+nk: order  of moment used in  SS method
+```
+
+Author: Takahiro Misawa (ISSP, Univ. of Tokyo), Date: 2020/1/8
