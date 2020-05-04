@@ -8,7 +8,7 @@ int main(int argc, char* argv[]){
     
    char sdt[256],sdt_2[256],ctmp[256];
    FILE *fp,*fp_2, *fplist;
-   double complex **Ham,*tmp_Ham;
+   double complex **Ham,**tmp_Ham;
    double complex **s,*tmp_s;
    double complex **U,*tmp_U;
    double complex **V,*tmp_V;
@@ -28,10 +28,12 @@ int main(int argc, char* argv[]){
 
    int itr,ndim,nl,nz,itermax,*status;
    double complex *x,*z,*v2,*v12,*rhs,*r_l;
+   double complex *tmp_x,*tmp_v2;
    double complex *v14,*v4;
    double *res;
    double complex tmp,tmp_12,tmp_14;
    double threshold;
+   double diff;
 
    double  norm;
    double  rho,gamma;
@@ -51,10 +53,11 @@ int main(int argc, char* argv[]){
    sscanf(ctmp, "%ld %ld %ld\n", &All_N, &All_N, &ihermite);
    //printf("%d \n",ihermite);
    /*[s] allocate Hamiltonian*/
-   Ham      = cd_2d_allocate(All_N,All_N);
+   Ham       = cd_2d_allocate(All_N,All_N);
+   tmp_Ham   = cd_2d_allocate(All_N,All_N);
    for(int_i=0;int_i<All_N;int_i++){
      for(int_j=0;int_j<All_N;int_j++){
-       Ham[int_i][int_j] = 0.0;
+       Ham[int_i][int_j]     = 0.0;
      }
    }
    /*[e] allocate Hamiltonian*/
@@ -67,11 +70,14 @@ int main(int argc, char* argv[]){
    }
    fclose(fp);
    /*[e] read Hamiltonian defined in Matrix Market form*/
-
    /*[s] set parameters*/
    //All_N     = ihermite;
    ndim      = All_N;
    nl        = ndim;
+   nz        = 10;
+   gamma     = -5;
+   rho       = 10;
+   itermax   = 2000;
    dsfmt_init_gen_rand(&dsfmt,u_long_i);
    /*[e] set parameters*/
 
@@ -80,15 +86,24 @@ int main(int argc, char* argv[]){
    status  = (int *)malloc((3)*sizeof(int));
    res     = (double *)malloc((nz)*sizeof(double));
 
-   x       = (double complex*)malloc((nl)*sizeof(double complex));
+   x       = (double complex*)malloc((nl*nz)*sizeof(double complex));
+   tmp_x   = (double complex*)malloc((nl*nz)*sizeof(double complex));
+   z       = (double complex*)malloc((nz)*sizeof(double complex));
    vec     = (double complex*)malloc((All_N)*sizeof(double complex));
    r_l     = (double complex*)malloc((All_N)*sizeof(double complex));
    v2      = (double complex*)malloc((All_N)*sizeof(double complex));
+   tmp_v2  = (double complex*)malloc((All_N)*sizeof(double complex));
    v12     = (double complex*)malloc((All_N)*sizeof(double complex));
    v4      = (double complex*)malloc((All_N)*sizeof(double complex));
    v14     = (double complex*)malloc((All_N)*sizeof(double complex));
    rhs     = (double complex*)malloc((All_N)*sizeof(double complex));
    /*[e]allocate for vectors*/
+
+   /*[s] generation points in the complex plane*/
+   for(int_z=0;int_z<nz;int_z++){
+     z[int_z] = gamma+rho*cexp(2*PI*I*(int_z+0.5)/nz);
+   }
+   /*[e] generation points in the complex plane*/
 
    /*[s] generating initial vector*/
    for(int_i=0;int_i<All_N;int_i++){
@@ -115,8 +130,8 @@ int main(int argc, char* argv[]){
    komega_bicg_init(&ndim, &nl, &nz, x, z, &itermax, &threshold, NULL);
    /*[e] komega initialization*/
    /*[s] komega main loop: obtaining x solving (zI-H)x=v2*/
-   //printf("ini:cnt_nr =%d \n",cnt_nr);
    for(itr=0;itr<itermax;itr++){
+     //printf("%d \n",itr);
      for(int_i=0;int_i<All_N;int_i++){
        r_l[int_i] = v2[int_i];
      }
@@ -129,14 +144,35 @@ int main(int argc, char* argv[]){
        break;
      }
    }
-   //printf("fin:cnt_nr =%d \n",cnt_nr);
    /*[e] komega main loop: obtaining x solving (zI-H)x=v2*/
    komega_bicg_finalize();
 
-   for(int_i=0;int_i<All_N;int_i++){
-     print("%d %lf %lf\n",int_i,creal(x[int_i]),cimag(x[int_i]));
+   /*[s] check accuracy of inverse iteration*/
+   for(int_z=0;int_z<nz;int_z++){
+     /*[s] make tmp_Ham = (zI-H)*/
+     for(int_i=0;int_i<All_N;int_i++){
+       tmp_x[int_i] = x[int_i+int_z*All_N];
+       for(int_j=0;int_j<All_N;int_j++){
+         if(int_i==int_j){
+           tmp_Ham[int_i][int_j]  = z[int_z] - Ham[int_i][int_j];
+         }else{
+           tmp_Ham[int_i][int_j]  =          - Ham[int_i][int_j];
+         }
+       }
+     }
+     /*[e] make tmp_Ham = (zI-H)*/
+     /*[s] make (zI-H)*tmp_x = tmp_v2 */
+     MatVec(All_N,tmp_Ham,tmp_x,tmp_v2);
+     /*[e] make (zI-H)*tmp_x = tmp_v2 */
+     diff = 0.0;
+     for(int_i=0;int_i<All_N;int_i++){
+       //printf("%d %d:  %lf %lf  : %lf %lf \n",int_z,int_i,creal(rhs[int_i]),cimag(rhs[int_i]),creal(tmp_v2[int_i]),cimag(tmp_v2[int_i]));
+       diff += cabs(rhs[int_i]-tmp_v2[int_i]); 
+     }
+     printf("accuracy of inverse iteration abs(rhs-tmp_v2) = %5.3e for z=%.5lf+%.5lfi (int_z=%d) \n",diff,creal(z[int_z]),cimag(z[int_z]),int_z);
    }
-  
+   /*[e] check accuracy of inverse iteration*/
+
    return 0;
 }
 
