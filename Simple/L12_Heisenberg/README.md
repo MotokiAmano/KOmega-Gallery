@@ -1,6 +1,6 @@
  ## Description
 
-Sample code for obtaining eigenvalues using Sakurai-Sugiura (SS) method. 
+Sample code for perfoming BiCG method. 
 
 ## How to compile 
 
@@ -12,7 +12,7 @@ By performing,
 ```
 sh ./com.sh
 ```
-SSkomega is generated.
+Komega.out is generated.
 
 ## Calculation
 To perform calculations, 
@@ -22,15 +22,14 @@ the 12-site one-dimensional Heisenberg chain.
 
 By performing,
 ```
-./SSKomega
+./Komega.out
 ```
-one can perform Sakurai-Sugira method and
-obtain the eigenvalues and eigenvectors
-in the specified region.
+one can perform BiCG method and
+obtain the solutions of (zI-H)x=b.
 
-## Parameters in SS method
+## Parameters in BiCG method
 Parameters are directly specifid in the source code
-(SSKomega.c).
+(Komega.c).
 
 
 Parameters used Komega are following two. 
@@ -39,7 +38,7 @@ itermax: maximum value for iterations in komega
 threshold : threshold for convergence in komega
 ```
 
-The contour intergrals are performed
+Complex numbers z are selected
 at the following points.
 
 ```
@@ -53,10 +52,4 @@ rho: length of the contour  integrals
 nz:  points of the contour intergral
 ```
 
-Following parameters are used in SS method.
-```
-nr: number of vectors used in SS method
-nk: order  of moment used in  SS method
-```
-
-Author: Takahiro Misawa (ISSP, Univ. of Tokyo), Date: 2020/1/8
+Author: Takahiro Misawa (ISSP, Univ. of Tokyo), Date: 2020/5/14
