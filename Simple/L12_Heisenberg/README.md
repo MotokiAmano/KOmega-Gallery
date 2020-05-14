@@ -10,7 +10,7 @@ please change compile options for lapack and komega (lib and include).
 
 By performing,
 ```
-sh ./com.sh
+source ./com.sh
 ```
 Komega.out is generated.
 
