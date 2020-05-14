@@ -78,6 +78,7 @@ int main(int argc, char* argv[]){
    gamma     = -5;
    rho       = 10;
    itermax   = 2000;
+   threshold = 1e-12;
    dsfmt_init_gen_rand(&dsfmt,u_long_i);
    /*[e] set parameters*/
 
